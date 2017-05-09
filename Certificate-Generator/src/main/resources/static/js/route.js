@@ -2,10 +2,8 @@ var app = angular.module("certificateApp.route", [ "ngRoute" ]);
 
 app.config(function($routeProvider) {
 	$routeProvider.when("/", {
-		templateUrl : "html/index.html"
-	}).when("/login", {
-		templateUrl : "html/login.html"
+		templateUrl : "html/home.html"
 	}).when("/home", {
-		templateUrl : "html/index.html"
+		templateUrl : "html/home.html"
 	});
 });

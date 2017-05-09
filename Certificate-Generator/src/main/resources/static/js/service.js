@@ -1,1 +1,1 @@
-var service = angular.module('certificateApp.service', []);
+var service = angular.module('certificateApp.service', ['certificateApp.homeService']);

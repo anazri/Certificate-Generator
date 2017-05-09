@@ -1,1 +1,1 @@
-var controller = angular.module('certificateApp.controller', []);
+var controller = angular.module('certificateApp.controller', ['certificateApp.homeController']);
