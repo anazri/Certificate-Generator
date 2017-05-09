@@ -25,7 +25,7 @@ import com.certificate.model.SubjectData;
 public class CertificateGenerator {
 	public CertificateGenerator() {}
 	
-	public X509Certificate generateCertificate(SubjectData subjectData, IssuerData issuerData) throws CertIOException {
+	public X509Certificate generateCertificate(SubjectData subjectData, IssuerData issuerData,boolean ca) throws CertIOException {
 		try {
 			JcaContentSignerBuilder builder = new JcaContentSignerBuilder("SHA256WithRSAEncryption");
 			
@@ -41,7 +41,7 @@ public class CertificateGenerator {
 					subjectData.getX500name(),
 					subjectData.getPublicKey());
 			
-			certGen.addExtension(Extension.keyUsage, true, new KeyUsage(KeyUsage.keyCertSign));
+			certGen.addExtension(Extension.keyUsage, ca, new KeyUsage(KeyUsage.keyCertSign));
 			
 			X509CertificateHolder certHolder = certGen.build(contentSigner);
 
