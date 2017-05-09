@@ -11,18 +11,16 @@ import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.springframework.stereotype.Service;
 
 @Service
 public class KeyStoreWriter {
-	//KeyStore je Java klasa za citanje specijalizovanih datoteka koje se koriste za cuvanje kljuceva
-	//Tri tipa entiteta koji se obicno nalaze u ovakvim datotekama su:
-	// - Sertifikati koji ukljucuju javni kljuc
-	// - Privatni kljucevi
-	// - Tajni kljucevi, koji se koriste u simetricnima siframa
 	private KeyStore keyStore;
-	
+
 	public KeyStoreWriter() {
 		try {
 			keyStore = KeyStore.getInstance("JKS", "SUN");
@@ -32,13 +30,12 @@ public class KeyStoreWriter {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void loadKeyStore(String fileName, char[] password) {
 		try {
-			if(fileName != null) {
+			if (fileName != null) {
 				keyStore.load(new FileInputStream(fileName), password);
 			} else {
-				//Ako je cilj kreirati novi KeyStore poziva se i dalje load, pri cemu je prvi parametar null
 				keyStore.load(null, password);
 			}
 		} catch (NoSuchAlgorithmException e) {
@@ -51,7 +48,7 @@ public class KeyStoreWriter {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void saveKeyStore(String fileName, char[] password) {
 		try {
 			keyStore.store(new FileOutputStream(fileName), password);
@@ -67,10 +64,31 @@ public class KeyStoreWriter {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void write(String alias, PrivateKey privateKey, char[] password, Certificate certificate) {
 		try {
-			keyStore.setKeyEntry(alias, privateKey, password, new Certificate[] {certificate});
+
+			/*
+			 * X500Name x500name = new
+			 * JcaX509CertificateHolder((X509Certificate)
+			 * certificate).getIssuer(); RDN cn =
+			 * x500name.getRDNs(BCStyle.CN)[0]; String parentAlias =
+			 * IETFUtils.valueToString(cn.getFirst().getValue()); Certificate[]
+			 * certificates= keyStore.getCertificateChain(parentAlias);
+			 */
+
+			Certificate[] certificates = keyStore
+					.getCertificateChain(((X509Certificate) certificate).getIssuerX500Principal().getName());
+
+			if (certificates != null && certificates.length != 0) {
+
+				ArrayList<Certificate> temp = (ArrayList<Certificate>) Arrays.asList(certificates);
+				temp.add(certificate);
+
+				keyStore.setKeyEntry(alias, privateKey, password, (Certificate[]) temp.toArray());
+			} else {
+				keyStore.setKeyEntry(alias, privateKey, password, new Certificate[] { certificate });
+			}
 		} catch (KeyStoreException e) {
 			e.printStackTrace();
 		}

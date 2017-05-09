@@ -16,9 +16,16 @@ public class CertificateData implements Serializable {
 	private String ou;
 	private String c;
 	private String e;
+	private String alias;
+	private String password;
+	
 	private boolean ca;
+	
 	private int numberOfDays;
 	private int keySize;
+	
+	
+	
 	public String getCn() {
 		return cn;
 	}
@@ -80,4 +87,16 @@ public class CertificateData implements Serializable {
 		this.keySize = keySize;
 	}
 	
+	public String getAlias() {
+		return alias;
+	}
+	public void setAlias(String alias) {
+		this.alias = alias;
+	}
+	public String getPassword() {
+		return password;
+	}
+	public void setPassword(String password) {
+		this.password = password;
+	}
 }

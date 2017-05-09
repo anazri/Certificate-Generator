@@ -3,6 +3,7 @@ package com.certificate.controller;
 
 
 import java.security.KeyPair;
+import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.util.Calendar;
 import java.util.Date;
@@ -27,6 +28,7 @@ import com.certificate.model.SubjectData;
 import com.certificate.service.CertificateGenerator;
 import com.certificate.service.CertificateReader;
 import com.certificate.service.KeyPairService;
+import com.certificate.service.KeyStoreWriter;
 
 @RestController
 @RequestMapping("/certificates")
@@ -41,11 +43,12 @@ public class CertificateController {
 	@Autowired
 	private KeyPairService keyPairService;
 	
+	@Autowired
+	private KeyStoreWriter keyStoreWriter;
+	
 	@RequestMapping(value="/generate", method=RequestMethod.POST, consumes=MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public ResponseEntity<?> generateCertificate(@RequestBody CertificateData certData){
-		
-		System.out.println("USO");
 		
 		X500NameBuilder builder = new X500NameBuilder(BCStyle.INSTANCE);
 	    builder.addRDN(BCStyle.CN, certData.getCn());
@@ -70,12 +73,14 @@ public class CertificateController {
 		SubjectData subject = new SubjectData(newKeyPair.getPublic(), x500name, "1", startDate, endDate);
 		
 		try {
-			X509Certificate cert = certGen.generateCertificate(subject, issuer);
-			System.out.println(cert);
+			Certificate cert = (Certificate) certGen.generateCertificate(subject, issuer);
+			
+			keyStoreWriter.write(((X509Certificate) cert).getSubjectX500Principal().getName(), newKeyPair.getPrivate(), certData.getPassword().toCharArray(), cert);
+			
 			return new ResponseEntity<>(HttpStatus.OK);
 		} catch (CertIOException e) {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 	}
-	
+
 }
