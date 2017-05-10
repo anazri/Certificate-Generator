@@ -12,7 +12,6 @@ import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
-import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateExpiredException;
 import java.security.cert.CertificateNotYetValidException;
@@ -21,11 +20,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.HashMap;
 
-import org.bouncycastle.asn1.x500.RDN;
 import org.bouncycastle.asn1.x500.X500Name;
-import org.bouncycastle.asn1.x500.style.BCStyle;
-import org.bouncycastle.asn1.x500.style.IETFUtils;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
 import org.springframework.stereotype.Service;
 
@@ -34,8 +31,10 @@ import com.certificate.model.IssuerData;
 @Service
 public class KeyStoreService {
 	
+	private HashMap<String,Certificate> revokedCertificates;
+	
 	public KeyStoreService() {
-		
+		revokedCertificates = new HashMap<>();
 	}
 	/**
 	 * Zadatak ove funkcije jeste da ucita podatke o izdavaocu i odgovarajuci privatni kljuc.
@@ -170,25 +169,21 @@ public class KeyStoreService {
 		}
 	}
 
-	public void write(KeyStore keyStore,String alias, PrivateKey privateKey, char[] password, Certificate certificate) {
+	public void write(KeyStore keyStore,String parentAlias,String alias, PrivateKey privateKey, char[] password, Certificate certificate) {
 		try {
-			X500Name x500name = new JcaX509CertificateHolder((X509Certificate)certificate).getIssuer(); 
-			RDN cn =x500name.getRDNs(BCStyle.CN)[0]; 
-			String parentAlias = IETFUtils.valueToString(cn.getFirst().getValue()); 
+			
 			Certificate[] certificates=null;
-			if(keyStore.containsAlias(parentAlias)){
+			if(parentAlias != null && keyStore.containsAlias(parentAlias)){
 				 certificates = keyStore.getCertificateChain(parentAlias);
 			}
 			if (certificates != null && certificates.length != 0) {
-				ArrayList<Certificate> temp = (ArrayList<Certificate>) Arrays.asList(certificates);
-				temp.add(certificate);
-				keyStore.setKeyEntry(alias, privateKey, password, (Certificate[]) temp.toArray());
+				ArrayList<Certificate> temp = new ArrayList<>(Arrays.asList(certificates));
+				temp.add(0, certificate);
+				keyStore.setKeyEntry(alias, privateKey, password, temp.toArray(new Certificate[temp.size()]));
 			} else {
 				keyStore.setKeyEntry(alias, privateKey, password, new Certificate[] { certificate });
 			}
 		} catch (KeyStoreException e) {
-			e.printStackTrace();
-		} catch (CertificateEncodingException e) {
 			e.printStackTrace();
 		}
 	}
@@ -211,7 +206,7 @@ public class KeyStoreService {
 		return id;
 	}
 	
-	public X509Certificate getSertificateBySerialNumber(KeyStore keyStore,String certificateId) throws KeyStoreException{
+	public X509Certificate getSertificateBySerialNumber(KeyStore keyStore,String certificateId) throws KeyStoreException, NullPointerException{
 		Enumeration<String> aliases=keyStore.aliases();
 		while(aliases.hasMoreElements()){
 			String alias=aliases.nextElement();
@@ -219,7 +214,27 @@ public class KeyStoreService {
 			if(temp.getSerialNumber().toString().equals(certificateId))
 				return temp;
 		}
-		return null;
+		 throw new NullPointerException();
+	}
+	public void revokeCertificate(KeyStore keyStore, String certificateID) throws KeyStoreException, NullPointerException {
+		X509Certificate certificate = this.getSertificateBySerialNumber(keyStore, certificateID);
+		String alias = keyStore.getCertificateAlias(certificate);
+		if(certificate.getKeyUsage() == null || !certificate.getKeyUsage()[5]){
+			keyStore.deleteEntry(alias);
+			revokedCertificates.put(alias, certificate);
+		} else {
+			ArrayList<Certificate> chain = new ArrayList<>(Arrays.asList(keyStore.getCertificateChain(alias)));
+			Enumeration<String> aliases=keyStore.aliases();
+			while(aliases.hasMoreElements()){
+				String tempA = aliases.nextElement();
+				ArrayList<Certificate> tempChain =  new ArrayList<> (Arrays.asList(keyStore.getCertificateChain(tempA)));
+				if(tempChain.containsAll(chain)){
+					keyStore.deleteEntry(tempA);
+					revokedCertificates.put(tempA, tempChain.get(tempChain.size()-1));
+				}
+			}
+		}
+		
 	}
 	
 	

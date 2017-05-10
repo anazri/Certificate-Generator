@@ -40,8 +40,9 @@ public class CertificateGenerator {
 					subjectData.getEndDate(),
 					subjectData.getX500name(),
 					subjectData.getPublicKey());
-			
-			certGen.addExtension(Extension.keyUsage, ca, new KeyUsage(KeyUsage.keyCertSign));
+			if(ca)
+				certGen.addExtension(Extension.keyUsage,true, new KeyUsage(KeyUsage.keyCertSign));
+
 			
 			X509CertificateHolder certHolder = certGen.build(contentSigner);
 
