@@ -63,6 +63,27 @@ homeService.factory('homeService', function($http) {
 		});
 	}
 	
+	temp.getCertificates = function(){
+		return $http({
+			method : 'GET',
+			url: '../certificates/getCertificates'
+		});
+	}
+	
+	temp.getExisting = function(certificateId){
+		return $http({
+			method : 'GET',
+			url: '../certificates/getExisting/'+certificateId
+		});
+	}
+	
+	temp.revokeCertificate = function(certificateId){
+		return $http({
+			method : 'POST',
+			url: '../certificates/revoke/'+certificateId
+		});
+	}
+	
 	return temp;
 })
 

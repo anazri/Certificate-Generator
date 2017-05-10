@@ -2,7 +2,7 @@ package com.certificate.model;
 
 import java.io.Serializable;
 
-public class CertificateData implements Serializable {
+public class CertificateRequest implements Serializable {
 	
 	private static final long serialVersionUID = 8838594674635077120L;
 	
