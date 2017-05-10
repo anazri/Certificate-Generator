@@ -1,6 +1,7 @@
 package com.certificate.service;
 
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -133,11 +134,11 @@ public class KeyStoreService {
 		return null;
 	}
 	
-	public KeyStore loadKeyStore(String fileName, char[] password) throws KeyStoreException, NoSuchProviderException {
+	public KeyStore loadKeyStore(File fileObj, char[] password) throws KeyStoreException, NoSuchProviderException {
 		KeyStore keyStore = this.createNewKeyStore();
 		try {
-			if (fileName != null) {
-				keyStore.load(new FileInputStream(fileName), password);
+			if (fileObj != null) {
+				keyStore.load(new FileInputStream(fileObj.getAbsolutePath()), password);
 			} else {
 				keyStore.load(null, password);
 			}

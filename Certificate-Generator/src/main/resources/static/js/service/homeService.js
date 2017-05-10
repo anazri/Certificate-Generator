@@ -12,7 +12,11 @@ homeService.factory('homeService', function($http) {
 	}
 	
 	temp.openKeyStore = function(file, pw){
-		return $http.post("/keystores/load/"+file+"/"+pw);
+		var fd = new FormData();
+	    fd.append('file', file);
+		return $http.post("/keystores/load/"+pw+"/"+pw, fd, {
+            transformRequest: angular.identity,
+            headers: {'Content-Type': undefined} });
 	}
 	
 	temp.saveKeyStore = function(file, pw){

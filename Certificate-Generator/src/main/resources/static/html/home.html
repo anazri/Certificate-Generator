@@ -16,8 +16,10 @@
 						data-toggle="dropdown" role="button" aria-haspopup="true"
 						aria-expanded="false">Keystore<span class="caret"></span></a>
 						<ul class="dropdown-menu">
-							<li><a href="#/" ng-click="NewKeystore()">New Keystore...</a></li>
-							<li><a href="#/" ng-click="OpenKeyStore()">Open Keystore File</a></li>
+							<li><a href="#/" ng-click="NewKeystore()">New
+									Keystore...</a></li>
+							<li><a href="#/" ng-click="OpenKeyStore()">Open Keystore
+									File</a></li>
 							<li><a href="!#">Open CA Certs Keystore</a></li>
 							<li role="separator" class="divider"></li>
 							<li><a href="#/" ng-click="SaveKeyStore()">Save Keystore</a></li>
@@ -28,19 +30,20 @@
 						data-toggle="dropdown" role="button" aria-haspopup="true"
 						aria-expanded="false">Certificates & Keys <span class="caret"></span></a>
 						<ul class="dropdown-menu">
-							<li><a href="#/" ng-click="generateCertificate()">Generate Certificate</a></li>
+							<li><a href="#/" ng-click="generateCertificate()">Generate
+									Certificate</a></li>
 							<li><a href="!#">Import Trusted Certificate</a></li>
 							<li><a href="!#">Import Key-Pair</a></li>
 							<li role="separator" class="divider"></li>
 							<li><a href="!#">Set Keystore Passoword</a></li>
-x						</ul></li>
+						</ul></li>
 					<li><a href="!#/">Help</a></li>
 				</ul>
 			</div>
 			<!-- Collect the nav links, forms, and other content for toggling -->
 			<div class="collapse navbar-collapse"
 				id="bs-example-navbar-collapse-1">
-				
+
 				<form class="navbar-form navbar-left">
 					<div class="form-group">
 						<input type="number" class="form-control" placeholder="Search">
@@ -52,85 +55,83 @@ x						</ul></li>
 		</div>
 		<!-- /.container-fluid -->
 	</nav>
-	
+
 	<md-dialog class="modal" id="saveModal" tabindex="-1"
-				aria-labelledby="myModalLabel" aria-hidden="true">
-			<div class="modal-dialog">
-				<div class="modal-content">
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal"
-							aria-hidden="true">
-							<i class="text-danger fa fa-times"></i>
-						</button>
-						<h4 class="modal-title" id="myModalLabel">
-							<i class="text-muted fa fa-shopping-cart"></i>Save<strong></strong>
-						</h4>
-					</div>
-					<div class="modal-body">
-						<form validate class="simple-form">
-							<h4>Filename</h4>
-							<input type="text" id="inpText" ng-model="save.filename">
-							<h4>Password</h4>
-							<input type="password" id="inppassword" ng-model="save.password">
-							
-							<input id="btnSave" type="submit" class="btn btn-default pulled-right"
-								ng-click="confirmSaveKeystore(save)" value="Save" />
-								
-						</form>
-					</div>
-				</div>
+		aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"
+					aria-hidden="true">
+					<i class="text-danger fa fa-times"></i>
+				</button>
+				<h4 class="modal-title" id="myModalLabel">
+					<i class="text-muted fa fa-shopping-cart"></i>Save<strong></strong>
+				</h4>
 			</div>
-			</md-dialog>
-			
-			<md-dialog class="modal" id="openModal" tabindex="-1"
-				aria-labelledby="myModalLabel" aria-hidden="true">
-			<div class="modal-dialog">
-				<div class="modal-content">
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal"
-							aria-hidden="true">
-							<i class="text-danger fa fa-times"></i>
-						</button>
-						<h4 class="modal-title" id="myModalLabel">
-							<i class="text-muted fa fa-shopping-cart"></i>Open<strong></strong>
-						</h4>
-					</div>
-					<div class="modal-body">
-						<form validate class="simple-form">
-							<h4>Select a file</h4>
-							<input type="file" id="jqFilename" ng-model="open.filename" onchange="angular.element(this).scope().fileNameChanged(this)">
-							<h4>Password</h4>
-							<input type="password" ng-model="open.password">
-							
-							<input id="btnOpen" type="submit" class="btn btn-default pulled-right"
-								ng-click="confirmOpenKeystore(open)" value="Confirm" />
-								
-						</form>
-					</div>
-				</div>
+			<div class="modal-body">
+				<form validate class="simple-form">
+					<h4>Filename</h4>
+					<input type="text" id="inpText" ng-model="save.filename">
+					<h4>Password</h4>
+					<input type="password" id="inppassword" ng-model="save.password">
+
+					<input id="btnSave" type="submit"
+						class="btn btn-default pulled-right"
+						ng-click="confirmSaveKeystore(save)" value="Save" />
+
+				</form>
 			</div>
-			</md-dialog>
-			
-			<md-dialog class="modal" id="generateCertificateModal" tabindex="-1"
-				aria-labelledby="myModalLabel" aria-hidden="true">
-			<div class="modal-dialog">
-				<div class="modal-content">
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal"
-							aria-hidden="true">
-							<i class="text-danger fa fa-times"></i>
-						</button>
-						<h4 class="modal-title" id="myModalLabel">
-							<i class="text-muted fa fa-shopping-cart"></i>Generate certificate<strong></strong>
-						</h4>
-					</div>
-					<div class="modal-body">
-						<form validate class="simple-form">
-								
-						</form>
-					</div>
-				</div>
+		</div>
+	</div>
+	</md-dialog>
+
+	<md-dialog class="modal" id="openModal" tabindex="-1"
+		aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"
+					aria-hidden="true">
+					<i class="text-danger fa fa-times"></i>
+				</button>
+				<h4 class="modal-title" id="myModalLabel">
+					<i class="text-muted fa fa-shopping-cart"></i>Open<strong></strong>
+				</h4>
 			</div>
-			</md-dialog>
-	
+			<div class="modal-body">
+				<form validate class="simple-form" method="post"
+					enctype="multipart/form-data" ng-submit="confirmOpenKeystore(open)">
+					<h4>Select a file</h4>
+					<input type="file" id="file" name="file" ng-model="open.filename" onchange="angular.element(this).scope().uploadedFile(this)">
+					<h4>Password</h4>
+					<input type="password" ng-model="open.password"> <input
+						id="btnOpen" type="submit" class="btn btn-default pulled-right"
+						value="Confirm" />
+				</form>
+			</div>
+		</div>
+	</div>
+	</md-dialog>
+
+	<md-dialog class="modal" id="generateCertificateModal" tabindex="-1"
+		aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"
+					aria-hidden="true">
+					<i class="text-danger fa fa-times"></i>
+				</button>
+				<h4 class="modal-title" id="myModalLabel">
+					<i class="text-muted fa fa-shopping-cart"></i>Generate certificate<strong></strong>
+				</h4>
+			</div>
+			<div class="modal-body">
+				<form validate class="simple-form"></form>
+			</div>
+		</div>
+	</div>
+	</md-dialog>
+
 </div>
