@@ -22,9 +22,13 @@ homeController.controller('homeController', function($scope, $location, ngNotify
 	}
 
 	$scope.open = {};
+	$scope.certificates={};
 	$scope.confirmOpenKeystore = function(open) {
 		
 		homeService.openKeyStore(fils, open.password).success(function(data) {
+			homeService.getCertificates().then(function(response){
+				$scope.certificates=response.data;
+			});
 			ngNotify.set('Successfully opened key store.' , {
 				type : 'success',
 				duration: 3000,
@@ -88,5 +92,34 @@ homeController.controller('homeController', function($scope, $location, ngNotify
 						})
 			});
 	}
-
+	
+	$scope.certificateId="";
+	$scope.getExisting = function(){
+		homeService.getExisting($scope.certificateId).then(function(response){
+			$scope.certificates=response.data;
+			alert(response.data.serialNumber);
+			alert(response.data.alias);
+		});
+	}
+	
+	$scope.listAllCertificates = function(){
+		homeService.getCertificates().then(function(response){
+			$scope.certificates=response.data;
+		});
+	}
+	$scope.listAllCertificates();
+	
+	$scope.revokeCertificate = function(certificateId){
+		homeService.revokeCertificate(certificateId).then(function(response){
+			for(var i=0;i<response.data.length;i++){
+				for(var j=0;j<$scope.certificates.length;j++){
+					if(response.data[i].serialNumber==$scope.certificates[j].serialNumber){
+						$scope.certificates.splice(j,1);
+						break;
+					}
+				}
+			}
+		});
+	}
+	
 })

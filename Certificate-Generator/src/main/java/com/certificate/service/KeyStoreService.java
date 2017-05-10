@@ -50,12 +50,9 @@ public class KeyStoreService {
 	 */
 	public IssuerData readIssuerFromStore(KeyStore keyStore, String alias, char[] keyPass) throws UnrecoverableKeyException {
 		try {
-			//Datoteka se ucitava
 			//BufferedInputStream in = new BufferedInputStream(new FileInputStream(keyStoreFile));
 			//keyStore.load(in, password);
-			//Iscitava se sertifikat koji ima dati alias
 			Certificate cert = keyStore.getCertificate(alias);
-			//Iscitava se privatni kljuc vezan za javni kljuc koji se nalazi na sertifikatu sa datim aliasom
 			PrivateKey privKey = (PrivateKey) keyStore.getKey(alias, keyPass);
 
 			X500Name issuerName = new JcaX509CertificateHolder((X509Certificate) cert).getSubject();
@@ -75,9 +72,7 @@ public class KeyStoreService {
 	 */
     public Certificate readCertificate(String keyStoreFile, String keyStorePass, String alias) {
 		try {
-			//kreiramo instancu KeyStore
 			KeyStore ks = KeyStore.getInstance("JKS", "SUN");
-			//ucitavamo podatke
 			BufferedInputStream in = new BufferedInputStream(new FileInputStream(keyStoreFile));
 			ks.load(in, keyStorePass.toCharArray());
 			
@@ -106,9 +101,7 @@ public class KeyStoreService {
 	 */
 	public PrivateKey readPrivateKey(String keyStoreFile, String keyStorePass, String alias, String pass) {
 		try {
-			//kreiramo instancu KeyStore
 			KeyStore ks = KeyStore.getInstance("JKS", "SUN");
-			//ucitavamo podatke
 			BufferedInputStream in = new BufferedInputStream(new FileInputStream(keyStoreFile));
 			ks.load(in, keyStorePass.toCharArray());
 			
@@ -215,12 +208,14 @@ public class KeyStoreService {
 		}
 		 throw new NullPointerException();
 	}
-	public void revokeCertificate(KeyStore keyStore, String certificateID) throws KeyStoreException, NullPointerException {
+	public Iterable<X509Certificate> revokeCertificate(KeyStore keyStore, String certificateID) throws KeyStoreException, NullPointerException {
 		X509Certificate certificate = this.getSertificateBySerialNumber(keyStore, certificateID);
 		String alias = keyStore.getCertificateAlias(certificate);
+		ArrayList<X509Certificate> deleted=new ArrayList<>();
 		if(certificate.getKeyUsage() == null || !certificate.getKeyUsage()[5]){
 			keyStore.deleteEntry(alias);
 			revokedCertificates.put(alias, certificate);
+			deleted.add(certificate);
 		} else {
 			ArrayList<Certificate> chain = new ArrayList<>(Arrays.asList(keyStore.getCertificateChain(alias)));
 			Enumeration<String> aliases=keyStore.aliases();
@@ -229,13 +224,13 @@ public class KeyStoreService {
 				ArrayList<Certificate> tempChain =  new ArrayList<> (Arrays.asList(keyStore.getCertificateChain(tempA)));
 				if(tempChain.containsAll(chain)){
 					keyStore.deleteEntry(tempA);
-					revokedCertificates.put(tempA, tempChain.get(tempChain.size()-1));
+					X509Certificate c=(X509Certificate) tempChain.get(0);
+					revokedCertificates.put(tempA, c);
+					deleted.add(c);
 				}
 			}
 		}
-		
+		return deleted;
 	}
-	
-	
 	
 }

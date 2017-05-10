@@ -52,8 +52,8 @@ public class CertificateService {
 		CertificateResponse response = new CertificateResponse();
 		this.setX500Name(new X500Name(cert.getSubjectX500Principal().getName(X500Principal.RFC1779)),response.getSubjectData());
 		this.setX500Name(new X500Name(cert.getIssuerX500Principal().getName(X500Principal.RFC1779)),response.getIssuerData());
-		response.setStartDate(cert.getNotAfter());
-		response.setEndDate(cert.getNotBefore());
+		response.setStartDate(cert.getNotBefore());
+		response.setEndDate(cert.getNotAfter());
 		response.setSerialNumber(""+cert.getSerialNumber());
 		response.setAlias(response.getSubjectData().getCn());
 		response.setKeySize(((RSAPublicKey)cert.getPublicKey()).getModulus().bitLength());

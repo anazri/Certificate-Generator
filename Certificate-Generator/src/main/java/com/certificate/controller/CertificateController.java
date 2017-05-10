@@ -148,15 +148,17 @@ public class CertificateController {
 			method=RequestMethod.POST,
 			produces=MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public ResponseEntity<X509Certificate> revokeExistingCertificate(@PathVariable("certificateID") String certificateID){
+	public ResponseEntity<Iterable<CertificateResponse>> revokeExistingCertificate(@PathVariable("certificateID") String certificateID){
 		KeyStore keyStore=(KeyStore)session.getAttribute("store");
 		try {
-			keyStoreService.revokeCertificate(keyStore, certificateID);
+			Iterable<X509Certificate> temp=keyStoreService.revokeCertificate(keyStore, certificateID);
+			ArrayList<CertificateResponse> deleted=new ArrayList<>();
+			for(X509Certificate cert : temp)
+				deleted.add(certGen.map(cert));
+			return new ResponseEntity<Iterable<CertificateResponse>>(deleted, HttpStatus.OK);
 		} catch (NullPointerException  | KeyStoreException e) {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
-		
-		return null;
 	}
 
 	private X500Name generateName(CertificateRequest certData){
