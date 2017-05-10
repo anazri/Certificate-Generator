@@ -1,1 +1,1 @@
-var app = angular.module('certificateApp', ['certificateApp.controller', 'certificateApp.service', 'certificateApp.route', 'ngMessages']);
+var app = angular.module('certificateApp', ['certificateApp.controller', 'certificateApp.service', 'certificateApp.route', 'ngNotify', 'ngMessages']);

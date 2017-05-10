@@ -78,6 +78,7 @@ public class CertificateController {
 			SubjectData subject = new SubjectData(newKeyPair.getPublic(), x500name, ""+keyStore.size(), startDate, endDate);
 			X509Certificate cert = certGen.generateCertificate(subject, issuer, true);
 			keyStoreService.write(keyStore,null,certData.getAlias(), newKeyPair.getPrivate(), certData.getPassword().toCharArray(),(Certificate) cert);
+			System.out.println(cert);
 			return new ResponseEntity<>(HttpStatus.OK);
 		} catch (CertIOException | KeyStoreException e) {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -91,7 +92,7 @@ public class CertificateController {
 	public ResponseEntity<?> generateCertificate(@RequestBody CertificateData certData, @PathVariable("parentAlias")String parentAlias, @PathVariable("parentPassword")String parentPassword){
 		KeyStore keyStore=(KeyStore)session.getAttribute("store");
 		X500Name subjectData=generateName(certData);
-		
+		System.out.println("USAO");
 		KeyPair newKeyPair = keyPairService.generateKeyPair(certData.getKeySize());
 		
 		Calendar cal = Calendar.getInstance();
@@ -104,6 +105,7 @@ public class CertificateController {
 	    	IssuerData issuer=keyStoreService.validateCa(keyStore, parentAlias, parentPassword.toCharArray());
 			X509Certificate cert = certGen.generateCertificate(subject, issuer, certData.isCa());
 			keyStoreService.write(keyStore,parentAlias,certData.getAlias(), newKeyPair.getPrivate(), certData.getPassword().toCharArray(),(Certificate) cert);
+			System.out.println(cert);
 			return new ResponseEntity<>(HttpStatus.OK);
 		} catch (KeyStoreException | CertIOException | UnrecoverableKeyException e) {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -118,7 +120,6 @@ public class CertificateController {
 		KeyStore keyStore=(KeyStore)session.getAttribute("store");
 		try {
 			X509Certificate certificate=keyStoreService.getSertificateBySerialNumber(keyStore, certificateID);
-			System.out.println(certificate);
 			return new ResponseEntity<X509Certificate>(certificate, HttpStatus.OK);
 		} catch (NullPointerException | KeyStoreException e) {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -142,7 +143,7 @@ public class CertificateController {
 
 	private X500Name generateName(CertificateData certData){
 		X500NameBuilder builder = new X500NameBuilder(BCStyle.INSTANCE);
-	    builder.addRDN(BCStyle.CN, certData.getCn());
+	    builder.addRDN(BCStyle.CN, certData.getAlias());
 	    builder.addRDN(BCStyle.SURNAME, certData.getSurname());
 	    builder.addRDN(BCStyle.GIVENNAME, certData.getGivenName());
 	    builder.addRDN(BCStyle.O, certData.getO());

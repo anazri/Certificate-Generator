@@ -4,19 +4,15 @@ import java.io.Serializable;
 
 public class CertificateData implements Serializable {
 	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 8838594674635077120L;
 	
-	private String cn;
+	private String alias;
 	private String surname;
 	private String givenName;
 	private String o;
 	private String ou;
 	private String c;
 	private String e;
-	private String alias;
 	private String password;
 	
 	private boolean ca;
@@ -24,14 +20,6 @@ public class CertificateData implements Serializable {
 	private int numberOfDays;
 	private int keySize;
 	
-	
-	
-	public String getCn() {
-		return cn;
-	}
-	public void setCn(String cn) {
-		this.cn = cn;
-	}
 	public String getSurname() {
 		return surname;
 	}
