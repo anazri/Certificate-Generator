@@ -134,7 +134,7 @@ public class KeyStoreService {
 		return null;
 	}
 	
-	public KeyStore loadKeyStore(File fileObj, char[] password) throws KeyStoreException, NoSuchProviderException {
+	public KeyStore loadKeyStore(File fileObj, char[] password) throws KeyStoreException, NoSuchProviderException ,IOException {
 		KeyStore keyStore = this.createNewKeyStore();
 		try {
 			if (fileObj != null) {
@@ -147,8 +147,6 @@ public class KeyStoreService {
 		} catch (CertificateException e) {
 			e.printStackTrace();
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		return keyStore;

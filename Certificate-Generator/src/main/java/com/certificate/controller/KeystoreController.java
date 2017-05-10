@@ -1,9 +1,7 @@
 package com.certificate.controller;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchProviderException;
@@ -19,7 +17,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -42,39 +39,38 @@ public class KeystoreController {
 		try {
 			KeyStore keyStore=keyStoreService.loadKeyStore(null, "".toCharArray());
 			session.setAttribute("store", keyStore);
-		} catch (KeyStoreException | NoSuchProviderException e) {
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		} catch (KeyStoreException | NoSuchProviderException | IOException e) {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	
 	@RequestMapping(value="/save/{file}/{password}",
-			method=RequestMethod.POST,
-			consumes=MediaType.APPLICATION_JSON_VALUE)
+			method=RequestMethod.POST)
 	public ResponseEntity<?> saveKeyStore(@PathVariable("file") String file, @PathVariable("password") String password){
 		KeyStore keyStore=(KeyStore) session.getAttribute("store");
 		if(keyStore==null)
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		keyStoreService.saveKeyStore(keyStore, file, password.toCharArray());
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	
-	@RequestMapping(value="/load/{file}/{password}",
+	@RequestMapping(value="/load/{password}",
 			method=RequestMethod.POST,
 			consumes=MediaType.MULTIPART_FORM_DATA_VALUE)
-	public ResponseEntity<?> loadKeyStore(@PathVariable("file") String file,@PathVariable("password")String password, @RequestParam(value = "file", required = false) MultipartFile fileMultipart	) throws IllegalStateException, IOException{
+	public ResponseEntity<?> loadKeyStore(@PathVariable("password")String password, @RequestParam(value = "file", required = false) MultipartFile fileMultipart	) throws IllegalStateException, IOException{
 		try {
 			if(fileMultipart != null){
 				String orgName = fileMultipart.getOriginalFilename();
 		        String filePath = "C:\\TempUploads\\" + orgName;
 		        
 				File fileObj = new File(filePath);
-				fileMultipart.transferTo(new File(filePath));
+				fileMultipart.transferTo(fileObj);
 				
 				KeyStore keyStore=keyStoreService.loadKeyStore(fileObj, password.toCharArray());
 				session.setAttribute("store", keyStore);
 			}
-		} catch (KeyStoreException | NoSuchProviderException e) {
+		} catch (KeyStoreException | NoSuchProviderException | IOException e) {
 			return new ResponseEntity<>(HttpStatus.I_AM_A_TEAPOT);
 		}
 		return new ResponseEntity<>(HttpStatus.OK);
