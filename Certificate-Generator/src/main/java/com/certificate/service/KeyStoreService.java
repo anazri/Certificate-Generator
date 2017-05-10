@@ -20,6 +20,7 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Enumeration;
 
 import org.bouncycastle.asn1.x500.RDN;
 import org.bouncycastle.asn1.x500.X500Name;
@@ -209,5 +210,18 @@ public class KeyStoreService {
 			id=this.readIssuerFromStore(keyStore, alias, keyPass);
 		return id;
 	}
+	
+	public X509Certificate getSertificateBySerialNumber(KeyStore keyStore,String certificateId) throws KeyStoreException{
+		Enumeration<String> aliases=keyStore.aliases();
+		while(aliases.hasMoreElements()){
+			String alias=aliases.nextElement();
+			X509Certificate temp=(X509Certificate) keyStore.getCertificate(alias);
+			if(temp.getSerialNumber().toString().equals(certificateId))
+				return temp;
+		}
+		return null;
+	}
+	
+	
 	
 }

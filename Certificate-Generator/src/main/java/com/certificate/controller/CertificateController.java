@@ -58,7 +58,11 @@ public class CertificateController {
 	@RequestMapping(value="/generateRoot", method=RequestMethod.POST, consumes=MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public ResponseEntity<?> generateRootCertificate(@RequestBody CertificateData certData){
-	    X500Name x500name=generateName(certData);
+		KeyStore keyStore=(KeyStore) session.getAttribute("store");
+		if(keyStore==null){
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+		X500Name x500name=generateName(certData);
 	    
 	    KeyPair newKeyPair = keyPairService.generateKeyPair(certData.getKeySize());
 	    
@@ -68,17 +72,15 @@ public class CertificateController {
 	    Date endDate = cal.getTime();
 	    
 		IssuerData issuer = new IssuerData(newKeyPair.getPrivate(), x500name);
-		SubjectData subject = new SubjectData(newKeyPair.getPublic(), x500name, "1", startDate, endDate);
 		
 		try {
+			SubjectData subject = new SubjectData(newKeyPair.getPublic(), x500name, ""+keyStore.size(), startDate, endDate);
 			X509Certificate cert = certGen.generateCertificate(subject, issuer, true);
-			KeyStore keyStore=(KeyStore) session.getAttribute("store");
-			if(keyStore==null){
-				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-			}
+			System.out.println("Serial number: " + cert.getSerialNumber());
 			keyStoreService.write(keyStore,certData.getAlias(), newKeyPair.getPrivate(), certData.getPassword().toCharArray(),(Certificate) cert);
+			System.out.println("KeyStore size: " + keyStore.size());
 			return new ResponseEntity<>(HttpStatus.OK);
-		} catch (CertIOException e) {
+		} catch (CertIOException | KeyStoreException e) {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 	}
@@ -97,12 +99,14 @@ public class CertificateController {
 	    Date startDate = new Date();
 	    cal.add(Calendar.DATE, certData.getNumberOfDays());
 	    Date endDate = cal.getTime();
-	    SubjectData subject = new SubjectData(newKeyPair.getPublic(), subjectData, "1", startDate, endDate);
 	    
 	    try {
+	    	SubjectData subject = new SubjectData(newKeyPair.getPublic(), subjectData, ""+keyStore.size(), startDate, endDate);
 	    	IssuerData issuer=keyStoreService.validateCa(keyStore, parentAlias, parentPassword.toCharArray());
 			X509Certificate cert = certGen.generateCertificate(subject, issuer, certData.isCa());
+			System.out.println("Serial number: " + cert.getSerialNumber());
 			keyStoreService.write(keyStore,certData.getAlias(), newKeyPair.getPrivate(), certData.getPassword().toCharArray(),(Certificate) cert);
+			System.out.println("KeyStore size: " + keyStore.size());
 			return new ResponseEntity<>(HttpStatus.OK);
 		} catch (KeyStoreException | CertIOException | UnrecoverableKeyException e) {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -113,7 +117,23 @@ public class CertificateController {
 			method=RequestMethod.GET,
 			produces=MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public ResponseEntity<?> generateExistingCertificate(@PathVariable("certificateID") String certificateID){
+	public ResponseEntity<X509Certificate> getExistingCertificate(@PathVariable("certificateID") String certificateID){
+		KeyStore keyStore=(KeyStore)session.getAttribute("store");
+		try {
+			X509Certificate certificate=keyStoreService.getSertificateBySerialNumber(keyStore, certificateID);
+			System.out.println(certificate);
+			return new ResponseEntity<X509Certificate>(certificate, HttpStatus.OK);
+		} catch (KeyStoreException e) {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	@RequestMapping(value="/revoke/{certificateID}",
+			method=RequestMethod.POST,
+			produces=MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public ResponseEntity<X509Certificate> revokeExistingCertificate(@PathVariable("certificateID") String certificateID){
+		KeyStore keyStore=(KeyStore)session.getAttribute("store");
 		return null;
 	}
 
