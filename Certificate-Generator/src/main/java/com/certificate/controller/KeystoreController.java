@@ -34,18 +34,17 @@ public class KeystoreController {
 			KeyStore keyStore=keyStoreService.loadKeyStore(null, "".toCharArray());
 			session.setAttribute("store", keyStore);
 		} catch (KeyStoreException | NoSuchProviderException e) {
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	
 	@RequestMapping(value="/save/{file}/{password}",
-			method=RequestMethod.POST,
-			consumes=MediaType.APPLICATION_JSON_VALUE)
+			method=RequestMethod.POST)
 	public ResponseEntity<?> saveKeyStore(@PathVariable("file") String file, @PathVariable("password") String password){
 		KeyStore keyStore=(KeyStore) session.getAttribute("store");
 		if(keyStore==null)
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		keyStoreService.saveKeyStore(keyStore, file, password.toCharArray());
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
