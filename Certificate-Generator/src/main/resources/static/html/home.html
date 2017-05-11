@@ -90,10 +90,7 @@
 					<input type="text" id="inpText" ng-model="save.filename">
 					<h4>Password</h4>
 					<input type="password" id="inppassword" ng-model="save.password">
-
-					<input id="btnSave" type="submit"
-						class="btn btn-default pulled-right"
-						ng-click="confirmSaveKeystore(save)" value="Save" />
+					<a target="_self" ng-click="addExtension(save)" ng-href="http://localhost:8080/keystores/save/{{save.password}}/{{save.filename}}" type="submit">Save</a>
 
 				</form>
 			</div>
@@ -163,7 +160,8 @@
 					<h4>Password</h4>
 						<input type="password" ng-model="cert.password">
 					<h4>Key size </h4>
-						<input type="number" ng-model="cert.keySize">
+					<select ng-model="cert.keySize" ng-options="keySize for keySize in keySizes">
+					</select>
 					<label ng-if="!selfSigned" class="checkbox-inline"><input type="checkbox" value="" checked ng-model="cert.ca">CA</label>
 					<input id="btnCreate" type="submit" class="btn btn-default pulled-right"
 						value="Create certificate" ng-click="createCertificate(cert)" />
