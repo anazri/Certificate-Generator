@@ -65,7 +65,10 @@ public class KeystoreController {
 		try {
 			 fileInputStream = new FileInputStream(fileResp);
 			 IOUtils.copy(fileInputStream, response.getOutputStream());
+			 fileInputStream.close();
+			 fileResp.delete();
 			 response.flushBuffer();
+			
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

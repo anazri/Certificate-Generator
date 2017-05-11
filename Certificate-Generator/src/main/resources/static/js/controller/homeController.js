@@ -64,7 +64,9 @@ homeController.controller('homeController', function($scope, $location, ngNotify
 	}
 	
 	$scope.addExtension = function(save){
-		save.filename = save.filename + ".jks";
+		var n = save.filename.endsWith(".jks");
+		if(!n)
+			save.filename = save.filename + ".jks";
 	}
 	
 	$scope.generateCertificate = function() {

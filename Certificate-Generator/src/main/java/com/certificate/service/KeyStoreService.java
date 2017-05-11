@@ -148,7 +148,9 @@ public class KeyStoreService {
 	public File saveKeyStore(KeyStore keyStore,String fileName, char[] password) {
 		File file = new File(fileName);
 		try {
-			keyStore.store(new FileOutputStream(file), password);
+			FileOutputStream fos = new FileOutputStream(file);
+			keyStore.store(fos, password);
+			fos.close();
 			return file;
 		} catch (KeyStoreException e) {
 			e.printStackTrace();
