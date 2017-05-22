@@ -6,6 +6,7 @@ var homeController = angular.module('certificateApp.homeController', []);
 homeController.controller('homeController', function($scope, $location, ngNotify,
 		homeService) {
 	
+
 	
 	$scope.listAllCertificates = function(){
 		homeService.getCertificates().then(function(response){
@@ -16,6 +17,8 @@ homeController.controller('homeController', function($scope, $location, ngNotify
 	
 	$scope.listAllCertificates();
 
+	$scope.keySizes = [1024, 2048];
+	
 	$scope.NewKeystore = function() {
 		homeService.newKeystore().success(function(data) {
 			ngNotify.set('Successfully created key store.' , {
@@ -71,7 +74,13 @@ homeController.controller('homeController', function($scope, $location, ngNotify
 					})
 				});
 	}
-
+	
+	$scope.addExtension = function(save){
+		var n = save.filename.endsWith(".jks");
+		if(!n)
+			save.filename = save.filename + ".jks";
+	}
+	
 	$scope.generateCertificate = function() {
 		$("#generateCertificateModal").modal("show");
 	}
@@ -82,6 +91,7 @@ homeController.controller('homeController', function($scope, $location, ngNotify
 	}
 	
 	$scope.cert={};
+	$scope.cert.keySize = 1024;
 	$scope.parent={};
 	$scope.certificates=[];
 	$scope.createCertificate = function(cert){
@@ -104,15 +114,17 @@ homeController.controller('homeController', function($scope, $location, ngNotify
 							duration: 3000,
 							theme: 'pitchy'
 						})
+						homeService.getCertificates().then(function(response){
+							$scope.certificates=response.data;
+						});
 			});
 	}
 	
 	$scope.certificateId="";
 	$scope.getExisting = function(){
 		homeService.getExisting($scope.certificateId).then(function(response){
-			$scope.certificates=response.data;
-			alert(response.data.serialNumber);
-			alert(response.data.alias);
+			$scope.certificates={};
+			$scope.certificates[0] = response.data;
 		});
 	}
 	

@@ -1,14 +1,20 @@
 package com.certificate.controller;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchProviderException;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +23,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -45,13 +52,28 @@ public class KeystoreController {
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	
-	@RequestMapping(value="/save/{file}/{password}",
-			method=RequestMethod.POST)
-	public ResponseEntity<?> saveKeyStore(@PathVariable("file") String file, @PathVariable("password") String password){
+	@RequestMapping(value="/save/{password}/{file}",
+			method=RequestMethod.GET)
+	@ResponseBody
+	public ResponseEntity<?> saveKeyStore(@PathVariable("file") String file, @PathVariable("password") String password, HttpServletResponse response){
 		KeyStore keyStore=(KeyStore) session.getAttribute("store");
 		if(keyStore==null)
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		keyStoreService.saveKeyStore(keyStore, file, password.toCharArray());
+		File fileResp = keyStoreService.saveKeyStore(keyStore, file + ".jks", password.toCharArray());
+		
+		FileInputStream fileInputStream;
+		try {
+			 fileInputStream = new FileInputStream(fileResp);
+			 IOUtils.copy(fileInputStream, response.getOutputStream());
+			 fileInputStream.close();
+			 fileResp.delete();
+			 response.flushBuffer();
+			
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	

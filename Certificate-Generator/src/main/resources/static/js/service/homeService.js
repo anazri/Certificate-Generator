@@ -20,7 +20,7 @@ homeService.factory('homeService', function($http) {
 	}
 	
 	temp.saveKeyStore = function(file, pw){
-		return $http.post("/keystores/save/"+file+"/"+pw);
+		return $http.post("/keystores/save/"+pw+"/"+file);
 	}
 	
 	temp.createRootCertificate = function(cert){

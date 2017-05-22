@@ -145,9 +145,13 @@ public class KeyStoreService {
 		return keyStore;
 	}
 
-	public void saveKeyStore(KeyStore keyStore,String fileName, char[] password) {
+	public File saveKeyStore(KeyStore keyStore,String fileName, char[] password) {
+		File file = new File(fileName);
 		try {
-			keyStore.store(new FileOutputStream(fileName), password);
+			FileOutputStream fos = new FileOutputStream(file);
+			keyStore.store(fos, password);
+			fos.close();
+			return file;
 		} catch (KeyStoreException e) {
 			e.printStackTrace();
 		} catch (NoSuchAlgorithmException e) {
@@ -159,6 +163,7 @@ public class KeyStoreService {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		return null;
 	}
 
 	public void write(KeyStore keyStore,String parentAlias,String alias, PrivateKey privateKey, char[] password, Certificate certificate) {
