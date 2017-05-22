@@ -7,6 +7,7 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
+import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x500.X500NameBuilder;
 import org.bouncycastle.asn1.x500.style.BCStyle;
 import org.bouncycastle.cert.CertIOException;
+import org.bouncycastle.util.test.FixedSecureRandom.BigInteger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -34,13 +36,18 @@ import com.certificate.model.CertificateRequest;
 import com.certificate.model.CertificateResponse;
 import com.certificate.model.IssuerData;
 import com.certificate.model.SubjectData;
+import com.certificate.model.X509RevokedCertificate;
 import com.certificate.service.CertificateService;
 import com.certificate.service.KeyPairService;
 import com.certificate.service.KeyStoreService;
+import com.certificate.service.X509RevokedCertificateImpl;
 
 @RestController
 @RequestMapping("/certificates")
 public class CertificateController {
+	
+	@Autowired
+	private X509RevokedCertificateImpl x509RevokedCert;
 	
 	@Autowired
 	private CertificateService certGen;
@@ -91,12 +98,12 @@ public class CertificateController {
 		IssuerData issuer = new IssuerData(newKeyPair.getPrivate(), x500name);
 		
 		try {
-			SubjectData subject = new SubjectData(newKeyPair.getPublic(), x500name, ""+keyStore.size(), startDate, endDate);
+			SubjectData subject = new SubjectData(newKeyPair.getPublic(), x500name, ""+certData.getSerialNumber(), startDate, endDate);
 			X509Certificate cert = certGen.generateCertificate(subject, issuer, true);
 			CertificateResponse cr = certGen.map(cert);
 			keyStoreService.write(keyStore,null,certData.getAlias(), newKeyPair.getPrivate(), certData.getPassword().toCharArray(),(Certificate) cert);
 			return new ResponseEntity<CertificateResponse>(cr,HttpStatus.OK);
-		} catch (CertIOException | KeyStoreException e) {
+		} catch (CertIOException e) {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 	}
@@ -153,8 +160,20 @@ public class CertificateController {
 		try {
 			Iterable<X509Certificate> temp=keyStoreService.revokeCertificate(keyStore, certificateID);
 			ArrayList<CertificateResponse> deleted=new ArrayList<>();
-			for(X509Certificate cert : temp)
+			for(X509Certificate cert : temp){
 				deleted.add(certGen.map(cert));
+				try {
+					X509RevokedCertificate tmp = new X509RevokedCertificate();
+					tmp.setX509Bytes(cert.getEncoded());
+					boolean ca = cert.getKeyUsage() != null ? true : false;
+					tmp.setCa(ca);
+					tmp.setSerialNumber(cert.getSerialNumber().longValue());
+					x509RevokedCert.save(tmp);
+				} catch (CertificateEncodingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 			return new ResponseEntity<Iterable<CertificateResponse>>(deleted, HttpStatus.OK);
 		} catch (NullPointerException  | KeyStoreException e) {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

@@ -38,7 +38,8 @@ homeService.factory('homeService', function($http) {
 				"password": cert.password,
 				"ca": cert.ca,
 				"numberOfDays": cert.numberOfDays,
-				"keySize": cert.keySize
+				"keySize": cert.keySize,
+				"serialNumber": cert.serialNumber
 			}
 		});
 	}
@@ -58,7 +59,8 @@ homeService.factory('homeService', function($http) {
 				"password": cert.password,
 				"ca": cert.ca,
 				"numberOfDays": cert.numberOfDays,
-				"keySize": cert.keySize
+				"keySize": cert.keySize,
+				"serialNumber": cert.serialNumber
 			}
 		});
 	}

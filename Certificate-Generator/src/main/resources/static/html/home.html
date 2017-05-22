@@ -37,7 +37,6 @@
 							<li role="separator" class="divider"></li>
 							<li><a href="!#">Set Keystore Passoword</a></li>
 						</ul></li>
-					<li><a href="!#/">Help</a></li>
 				</ul>
 			</div>
 			<!-- Collect the nav links, forms, and other content for toggling -->
@@ -139,6 +138,8 @@
 			<div class="modal-body">
 				<form validate class="simple-form">
 					<label class="checkbox-inline"><input type="checkbox" value="" ng-model="selfSigned">Self-signed</label>
+					<h4>Serial number</h4>
+						<input type="number" ng-model="cert.serialNumber">
 					<h4 ng-if="!selfSigned">Parent alias</h4>
 						<!-- <select ng-if="!selfSigned" ng-model="parentAlias" ng-options="alias in aliases"></select> -->
 						<input ng-if="!selfSigned" type="text" ng-model="parent.alias">

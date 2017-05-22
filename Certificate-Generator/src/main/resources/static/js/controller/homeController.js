@@ -5,6 +5,16 @@ var homeController = angular.module('certificateApp.homeController', []);
 
 homeController.controller('homeController', function($scope, $location, ngNotify,
 		homeService) {
+	
+	
+	$scope.listAllCertificates = function(){
+		homeService.getCertificates().then(function(response){
+			if(response.data != null)
+				$scope.certificates=response.data;
+		});
+	}
+	
+	$scope.listAllCertificates();
 
 	$scope.NewKeystore = function() {
 		homeService.newKeystore().success(function(data) {
@@ -27,7 +37,8 @@ homeController.controller('homeController', function($scope, $location, ngNotify
 		
 		homeService.openKeyStore(fils, open.password).success(function(data) {
 			homeService.getCertificates().then(function(response){
-				$scope.certificates=response.data;
+				if(response.data != null)
+					$scope.certificates=response.data;
 			});
 			ngNotify.set('Successfully opened key store.' , {
 				type : 'success',
@@ -72,10 +83,12 @@ homeController.controller('homeController', function($scope, $location, ngNotify
 	
 	$scope.cert={};
 	$scope.parent={};
+	$scope.certificates=[];
 	$scope.createCertificate = function(cert){
 		if($scope.selfSigned)
 			homeService.createRootCertificate(cert).success(
 					function(data) {
+						$scope.certificates.push(data);
 						ngNotify.set('Successfully created root certificate.' , {
 							type : 'success',
 							duration: 3000,
@@ -85,6 +98,7 @@ homeController.controller('homeController', function($scope, $location, ngNotify
 		else
 			homeService.createCertificate(cert,$scope.parent.alias,$scope.parent.password).success(
 					function(data) {
+						$scope.certificates.push(data);
 						ngNotify.set('Successfully created certificate.' , {
 							type : 'success',
 							duration: 3000,
@@ -102,12 +116,8 @@ homeController.controller('homeController', function($scope, $location, ngNotify
 		});
 	}
 	
-	$scope.listAllCertificates = function(){
-		homeService.getCertificates().then(function(response){
-			$scope.certificates=response.data;
-		});
-	}
-	$scope.listAllCertificates();
+
+
 	
 	$scope.revokeCertificate = function(certificateId){
 		homeService.revokeCertificate(certificateId).then(function(response){

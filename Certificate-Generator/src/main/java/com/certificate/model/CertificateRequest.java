@@ -20,6 +20,11 @@ public class CertificateRequest implements Serializable {
 	private int numberOfDays;
 	private int keySize;
 	
+	private long serialNumber;
+	
+	public long getSerialNumber() {
+		return serialNumber;
+	}
 	public String getSurname() {
 		return surname;
 	}
