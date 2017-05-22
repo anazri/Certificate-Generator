@@ -67,6 +67,7 @@ homeController.controller('homeController', function($scope, $location, ngNotify
 	$scope.confirmSaveKeystore = function(saved) {
 		homeService.saveKeyStore(saved.filename, saved.password).success(
 				function(data) {
+					$scope.cleanFieldsSave();
 					ngNotify.set('Successfully saved key store.' , {
 						type : 'success',
 						duration: 3000,
@@ -99,6 +100,7 @@ homeController.controller('homeController', function($scope, $location, ngNotify
 			homeService.createRootCertificate(cert).success(
 					function(data) {
 						$scope.certificates.push(data);
+						$scope.cleanFields();
 						ngNotify.set('Successfully created root certificate.' , {
 							type : 'success',
 							duration: 3000,
@@ -109,6 +111,7 @@ homeController.controller('homeController', function($scope, $location, ngNotify
 			homeService.createCertificate(cert,$scope.parent.alias,$scope.parent.password).success(
 					function(data) {
 						$scope.certificates.push(data);
+						$scope.cleanFields();
 						ngNotify.set('Successfully created certificate.' , {
 							type : 'success',
 							duration: 3000,
@@ -142,6 +145,14 @@ homeController.controller('homeController', function($scope, $location, ngNotify
 				}
 			}
 		});
+	}
+	
+	$scope.cleanFields = function(){
+		$scope.cert = {};
+	}
+	
+	$scope.cleanFieldsSave = function(){
+		$scope.save = {};
 	}
 	
 })
