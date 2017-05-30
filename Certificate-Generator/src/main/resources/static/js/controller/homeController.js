@@ -15,6 +15,15 @@ homeController.controller('homeController', function($scope, $location, ngNotify
 		});
 	}
 	
+	$scope.keyStoreActive = {};
+	homeService.getKeystoreStatus().then(function(response){
+		if(response.data == true){
+			$scope.keyStoreActive = "Keystore active";
+			return;
+		}
+		$scope.keyStoreActive = "No keystore active";
+	});
+	
 	$scope.listAllCertificates();
 
 	$scope.keySizes = [1024, 2048];
@@ -37,7 +46,14 @@ homeController.controller('homeController', function($scope, $location, ngNotify
 	$scope.open = {};
 	$scope.certificates={};
 	$scope.confirmOpenKeystore = function(open) {
-		
+		if(fils.name == null){
+			ngNotify.set('Please select a keystore to open.' , {
+				type : 'success',
+				duration: 3000,
+				theme: 'pitchy'
+			});
+			return;
+		}
 		homeService.openKeyStore(fils, open.password).success(function(data) {
 			homeService.getCertificates().then(function(response){
 				if(response.data != null)
@@ -106,6 +122,7 @@ homeController.controller('homeController', function($scope, $location, ngNotify
 							duration: 3000,
 							theme: 'pitchy'
 						})
+					$("#generateCertificateModal").modal("hide");
 			});
 		else
 			homeService.createCertificate(cert,$scope.parent.alias,$scope.parent.password).success(
@@ -120,6 +137,7 @@ homeController.controller('homeController', function($scope, $location, ngNotify
 						homeService.getCertificates().then(function(response){
 							$scope.certificates=response.data;
 						});
+						$("#generateCertificateModal").modal("hide");
 			});
 	}
 	
@@ -131,8 +149,23 @@ homeController.controller('homeController', function($scope, $location, ngNotify
 		});
 	}
 	
-
-
+	$scope.checkOCSP = function(){
+		homeService.checkOCSP($scope.certificateId).then(function(response){
+			if(response.data == true){
+				ngNotify.set('Certificate is valid or does not exist.' , {
+					type : 'success',
+					duration: 3000,
+					theme: 'pitchy'
+				})
+				return;
+			} 
+			ngNotify.set('Certificate has been revoked.' , {
+				type : 'success',
+				duration: 3000,
+				theme: 'pitchy'
+			})
+		});
+	}
 	
 	$scope.revokeCertificate = function(certificateId){
 		homeService.revokeCertificate(certificateId).then(function(response){

@@ -2,6 +2,8 @@ package com.certificate.controller;
 
 
 
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.forwardedUrl;
+
 import java.security.KeyPair;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -51,9 +53,6 @@ public class CertificateController {
 	
 	@Autowired
 	private CertificateService certGen;
-	
-	//@Autowired
-	//private CertificateReader certReader;
 	
 	@Autowired
 	private KeyPairService keyPairService;
@@ -151,6 +150,20 @@ public class CertificateController {
 		}
 	}
 	
+	
+	@RequestMapping(value="/getStatus/{serialNumber}",
+			method=RequestMethod.POST,
+			produces=MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public ResponseEntity<?> getRevocationStatus(@PathVariable("serialNumber") String certificateID){
+		System.out.println(certificateID);
+			if(x509RevokedCert.findBySerialNumber(Long.parseLong(certificateID)) != null){
+				return new ResponseEntity<Boolean>(new Boolean(false), HttpStatus.OK);
+			} 
+			return new ResponseEntity<Boolean>(new Boolean(true), HttpStatus.OK);
+	}
+	
+	
 	@RequestMapping(value="/revoke/{certificateID}",
 			method=RequestMethod.POST,
 			produces=MediaType.APPLICATION_JSON_VALUE)
@@ -170,7 +183,6 @@ public class CertificateController {
 					tmp.setSerialNumber(cert.getSerialNumber().longValue());
 					x509RevokedCert.save(tmp);
 				} catch (CertificateEncodingException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}

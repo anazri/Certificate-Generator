@@ -18,4 +18,9 @@ public class X509RevokedCertificateImpl implements X509RevokedCertificateService
 		x509Cert.save(cert);
 	}
 
+	@Override
+	public X509RevokedCertificate findBySerialNumber(Long serialNumber) {
+		return x509Cert.findBySerialNumber(serialNumber);
+	}
+
 }

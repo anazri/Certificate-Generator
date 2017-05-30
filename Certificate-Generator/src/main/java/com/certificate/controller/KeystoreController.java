@@ -97,4 +97,15 @@ public class KeystoreController {
 		}
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
+	
+	@RequestMapping(value="/status",
+			method=RequestMethod.GET,
+			produces=MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public ResponseEntity<?> getRevocationStatus(){
+			if(session.getAttribute("store") != null){
+				return new ResponseEntity<Boolean>(new Boolean(true), HttpStatus.OK);
+			} 
+			return new ResponseEntity<Boolean>(new Boolean(false), HttpStatus.OK);
+	}
 }
