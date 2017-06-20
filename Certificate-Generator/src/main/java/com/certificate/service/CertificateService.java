@@ -1,5 +1,6 @@
 package com.certificate.service;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -26,16 +27,31 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.oxm.XmlMappingException;
 import org.springframework.stereotype.Service;
 
 import com.certificate.model.CertificateResponse;
 import com.certificate.model.IssuerData;
 import com.certificate.model.SubjectData;
 import com.certificate.model.X500NameMap;
+import com.certificate.user.GetUserRequest;
+import com.certificate.user.GetUserResponse;
+
+import certificate.com.webservice.client.BankClientUser;
+
+
+
 
 @Service
 public class CertificateService {
+	
+	
 	public CertificateService() {}
+	
+	@Autowired
+	private ApplicationContext con;
 	
 	public ArrayList<CertificateResponse> getSertificates(KeyStore keyStore) throws KeyStoreException{
 		ArrayList<CertificateResponse> list = new ArrayList<CertificateResponse>();
@@ -58,6 +74,26 @@ public class CertificateService {
 		response.setAlias(response.getSubjectData().getCn());
 		response.setKeySize(((RSAPublicKey)cert.getPublicKey()).getModulus().bitLength());
 		return response;
+	}
+	
+	public boolean getVerification(String email){
+		BankClientUser bcu = (BankClientUser) con.getBean(BankClientUser.class);
+		GetUserRequest request = new GetUserRequest();
+		request.setEmail(email);
+		GetUserResponse response = new GetUserResponse();
+		
+		try {
+			response = bcu.getUserResponse(request);
+		} catch (XmlMappingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return response.isVerified();
+		
 	}
 	
 	

@@ -24,6 +24,14 @@ homeController.controller('homeController', function($scope, $location, ngNotify
 		$scope.keyStoreActive = "No keystore active";
 	});
 	
+	
+	$scope.verify = function(){
+	
+		homeService.verify($scope.test).then(function(response){
+			alert("radi");
+		});
+	}
+	
 	$scope.listAllCertificates();
 
 	$scope.keySizes = [1024, 2048];

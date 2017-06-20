@@ -25,6 +25,10 @@ homeService.factory('homeService', function($http) {
 			}
 		});
 	}
+	
+	temp.verify = function(email) {
+		return $http.get("/certificates/getVerification/" + email);
+	}
 
 	temp.saveKeyStore = function(file, pw) {
 		return $http.post("/keystores/save/" + pw + "/" + file);

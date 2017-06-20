@@ -31,7 +31,11 @@
 							<li><a href="#/" ng-click="generateCertificate()">Generate
 									Certificate</a></li>
 							<li><a href="!#">Set Keystore Password</a></li>
-						</ul></li>
+						</ul>
+					</li>
+					
+					
+					
 				</ul>
 			</div>
 			<!-- Collect the nav links, forms, and other content for toggling -->
@@ -46,6 +50,12 @@
 					<button type="reset" class="btn btn-default" ng-click="listAllCertificates()">Reset</button>
 					<button type="button" class="btn btn-default" ng-click="checkOCSP()">Status</button>
 					<input type="text" disabled="disabled" ng-model="keyStoreActive"/> 
+					
+					<div class="form-group">
+						<input type="email" class="form-control" ng-model="test" placeholder="Enter email">
+					</div>
+					
+					<button type="submit" class="btn btn-default" ng-click="verify()">Verify</button>
 				</form>
 			</div>
 			<!-- /.navbar-collapse -->

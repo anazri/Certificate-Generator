@@ -66,7 +66,6 @@ public class KeystoreController {
 			 fileInputStream.close();
 			 fileResp.delete();
 			 response.flushBuffer();
-			
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

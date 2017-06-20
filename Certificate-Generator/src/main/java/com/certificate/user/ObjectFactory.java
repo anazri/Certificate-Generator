@@ -6,7 +6,7 @@
 //
 
 
-package com.certificate.ocsp;
+package com.certificate.user;
 
 import javax.xml.bind.annotation.XmlRegistry;
 
@@ -14,7 +14,7 @@ import javax.xml.bind.annotation.XmlRegistry;
 /**
  * This object contains factory methods for each 
  * Java content interface and Java element interface 
- * generated in the com.certificate.ocsp package. 
+ * generated in the com.certificate.user package. 
  * <p>An ObjectFactory allows you to programatically 
  * construct new instances of the Java representation 
  * for XML content. The Java representation of XML 
@@ -30,26 +30,26 @@ public class ObjectFactory {
 
 
     /**
-     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: com.certificate.ocsp
+     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: com.certificate.user
      * 
      */
     public ObjectFactory() {
     }
 
     /**
-     * Create an instance of {@link GetOCSPRequest }
+     * Create an instance of {@link GetUserResponse }
      * 
      */
-    public GetOCSPRequest createGetOCSPRequest() {
-        return new GetOCSPRequest();
+    public GetUserResponse createGetUserResponse() {
+        return new GetUserResponse();
     }
 
     /**
-     * Create an instance of {@link GetOCSPResponse }
+     * Create an instance of {@link GetUserRequest }
      * 
      */
-    public GetOCSPResponse createGetOCSPResponse() {
-        return new GetOCSPResponse();
+    public GetUserRequest createGetUserRequest() {
+        return new GetUserRequest();
     }
 
 }

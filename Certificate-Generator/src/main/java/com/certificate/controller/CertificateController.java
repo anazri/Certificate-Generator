@@ -72,6 +72,16 @@ public class CertificateController {
 		return new ResponseEntity<ArrayList<CertificateResponse>>(list,HttpStatus.OK);
 	}
 	
+	@RequestMapping(value="/getVerification/{email}", method=RequestMethod.GET,produces=MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public ResponseEntity<?> getVerification(@PathVariable("email") String email) throws KeyStoreException{
+
+		Boolean b = certGen.getVerification(email);
+		
+		
+		return new ResponseEntity<Boolean>(b,HttpStatus.OK);
+	}
+	
 	
 	@RequestMapping(value="/generateRoot", method=RequestMethod.POST, consumes=MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody

@@ -6,11 +6,10 @@
 //
 
 
-package com.certificate.ocsp;
+package com.certificate.user;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
@@ -25,7 +24,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="serial" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *         &lt;element name="verified" type="{http://www.w3.org/2001/XMLSchema}boolean"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -36,36 +35,27 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "serial"
+    "verified"
 })
-@XmlRootElement(name = "getOCSPRequest")
-public class GetOCSPRequest {
+@XmlRootElement(name = "getUserResponse")
+public class GetUserResponse {
 
-    @XmlElement(required = true)
-    protected String serial;
+    protected boolean verified;
 
     /**
-     * Gets the value of the serial property.
+     * Gets the value of the verified property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
      */
-    public String getSerial() {
-        return serial;
+    public boolean isVerified() {
+        return verified;
     }
 
     /**
-     * Sets the value of the serial property.
+     * Sets the value of the verified property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
      */
-    public void setSerial(String value) {
-        this.serial = value;
+    public void setVerified(boolean value) {
+        this.verified = value;
     }
 
 }
