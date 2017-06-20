@@ -25,9 +25,9 @@ homeController.controller('homeController', function($scope, $location, ngNotify
 	});
 	
 	
-	$scope.verify = function(){
+	$scope.verify = function(test){
 	
-		homeService.verify($scope.test).then(function(response){
+		homeService.verify(test).then(function(response){
 			alert("radi");
 		});
 	}
