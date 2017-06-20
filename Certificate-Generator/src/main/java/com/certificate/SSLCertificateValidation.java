@@ -11,6 +11,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 
+
 public class SSLCertificateValidation {
 
     public static void disable() {
